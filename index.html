@@ -123,11 +123,11 @@
 
         /**
          * 2. TETAPAN GAMBAR WATAK (PILIHAN)
-         * Anda boleh menukar URL/nama fail gambar di bawah atau memuat naik terus melalui butang pada skrin.
+         * Membaca fail imej yang telah anda muat naik ke GitHub.
          */
         const DEFAULT_IMAGES = {
-            cikguFatin: "Screenshot 2026-10-28 at 8.07.54 AM.jpg", // Gambar Cikgu Fatin yang dimuat naik
-            ariz: "Screenshot 2026-10-28 at 8.00.35 AM.jpg"        // Gambar Ariz / Haris yang dimuat naik
+            cikguFatin: "cikguFatin.png", // Gambar Cikgu Fatin yang baharu
+            ariz: "ariz.png"              // Gambar Ariz yang baharu
         };
 
         /**
@@ -189,33 +189,23 @@
                     <!-- Ruang Gambar Watak Cikgu Fatin -->
                     <div class="md:col-span-4 flex flex-col items-center text-center">
                         <div class="relative w-48 h-56 sm:w-52 sm:h-60 rounded-3xl bg-white border-4 border-slate-700 overflow-hidden flex items-center justify-center shadow-md p-1">
-                            <img id="img-cikgu" src="" alt="Cikgu Fatin" class="hidden w-full h-full object-contain">
-                            <!-- Ilustrasi SVG Cikgu Fatin (Berhijab merah jambu, berkaca mata, berjubah & memegang perisai titisan air) -->
+                            <img id="img-cikgu" src="" alt="Cikgu Fatin" class="hidden w-full h-full object-cover">
+                            <!-- Ilustrasi SVG asal sebagai sandaran sekiranya imej gagal dimuatkan -->
                             <svg id="svg-cikgu" viewBox="0 0 220 250" class="w-full h-full">
                                 <rect width="220" height="250" fill="#FFFDF7"/>
-                                <!-- Mantel Adiwira Maroon/Merah Jambu Gelap dengan Jalur Emas -->
                                 <path d="M70 110 C40 140 20 190 15 225 C40 235 80 240 165 230 L145 110 Z" fill="#881337" stroke="#F59E0B" stroke-width="4"/>
-                                <!-- Seluar Panjang Sopan -->
                                 <rect x="82" y="195" width="24" height="55" rx="8" fill="#881337" stroke="#334155" stroke-width="3"/>
                                 <rect x="114" y="195" width="24" height="55" rx="8" fill="#881337" stroke="#334155" stroke-width="3"/>
-                                <!-- Baju Labuh Lengan Panjang Merah Jambu -->
                                 <path d="M72 115 L55 170 L72 175 L82 140 L70 215 L150 215 L138 140 L165 155 L175 135 L145 115 Z" fill="#F472B6" stroke="#F59E0B" stroke-width="3.5"/>
-                                <!-- Tudung Labuh Merah Jambu -->
                                 <path d="M70 75 C70 20 150 20 150 75 C155 125 145 160 115 165 C80 160 65 125 70 75 Z" fill="#EC4899" stroke="#334155" stroke-width="3.5"/>
-                                <!-- Wajah -->
                                 <circle cx="110" cy="78" r="28" fill="#FDE2D2" stroke="#334155" stroke-width="3"/>
-                                <!-- Anak Tudung -->
                                 <path d="M84 68 C95 55 125 55 136 68 C128 50 92 50 84 68 Z" fill="#BE185D"/>
-                                <!-- Kaca Mata Bulat Emas -->
                                 <circle cx="98" cy="78" r="9" fill="#FFFFFF" fill-opacity="0.4" stroke="#D97706" stroke-width="3"/>
                                 <circle cx="122" cy="78" r="9" fill="#FFFFFF" fill-opacity="0.4" stroke="#D97706" stroke-width="3"/>
                                 <line x1="107" y1="78" x2="113" y2="78" stroke="#D97706" stroke-width="3"/>
-                                <!-- Mata -->
                                 <circle cx="98" cy="78" r="3.5" fill="#334155"/>
                                 <circle cx="122" cy="78" r="3.5" fill="#334155"/>
-                                <!-- Senyuman -->
                                 <path d="M103 91 Q110 97 117 91" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
-                                <!-- Perisai Merah Jambu & Emas dengan Titisan Air -->
                                 <path d="M68 135 L112 130 C112 165 102 188 88 198 C72 188 64 165 68 135 Z" fill="#F9A8D4" stroke="#D97706" stroke-width="5"/>
                                 <path d="M90 146 C90 146 100 162 100 170 C100 176 95 180 90 180 C85 180 80 176 80 170 C80 162 90 146 90 146 Z" fill="#FFFFFF"/>
                             </svg>
@@ -224,7 +214,7 @@
                             Cikgu Fatin
                         </span>
                         <label class="mt-2 cursor-pointer bg-pastel-pink/60 hover:bg-pastel-pink border-2 border-slate-700 px-3 py-1.5 rounded-xl text-sm font-extrabold text-slate-800 flex items-center gap-1.5 shadow-sm">
-                            <i data-lucide="image-plus" class="w-4 h-4 text-pink-700"></i> Pilih Gambar Cikgu Fatin
+                            <i data-lucide="image-plus" class="w-4 h-4 text-pink-700"></i> Tukar Gambar Cikgu
                             <input type="file" accept="image/*" class="hidden" onchange="uploadCharacterImage(event, 'cikgu')">
                         </label>
                     </div>
@@ -247,34 +237,24 @@
                     <!-- Ruang Gambar Watak Ariz -->
                     <div class="md:col-span-4 flex flex-col items-center text-center">
                         <div class="relative w-48 h-56 sm:w-52 sm:h-60 rounded-3xl bg-white border-4 border-slate-700 overflow-hidden flex items-center justify-center shadow-md p-1">
-                            <img id="img-ariz" src="" alt="Ariz" class="hidden w-full h-full object-contain">
-                            <!-- Ilustrasi SVG Ariz (Adiwira biru dan emas, berlengan panjang, berseluar panjang & memegang perisai biru) -->
+                            <img id="img-ariz" src="" alt="Ariz" class="hidden w-full h-full object-cover">
+                            <!-- Ilustrasi SVG asal sebagai sandaran sekiranya imej gagal dimuatkan -->
                             <svg id="svg-ariz" viewBox="0 0 220 250" class="w-full h-full">
                                 <rect width="220" height="250" fill="#FFFDF7"/>
-                                <!-- Mantel Adiwira Emas -->
                                 <path d="M68 112 L35 215 L175 215 L145 112 Z" fill="#F59E0B" stroke="#B45309" stroke-width="3.5"/>
-                                <!-- Seluar Panjang Biru Gelap -->
                                 <path d="M82 180 L72 245 L98 245 L106 195 L114 195 L122 245 L148 245 L138 180 Z" fill="#1E3A8A" stroke="#334155" stroke-width="3.5"/>
-                                <!-- Baju Adiwira Lengan Panjang Biru -->
                                 <path d="M68 115 C68 102 152 102 152 115 L168 160 L148 168 L138 138 L142 190 L78 190 L82 138 L72 168 L52 160 Z" fill="#0284C7" stroke="#F59E0B" stroke-width="3.5"/>
-                                <!-- Tali Pinggang Emas -->
                                 <rect x="78" y="158" width="64" height="10" fill="#F59E0B" stroke="#B45309" stroke-width="2"/>
                                 <circle cx="110" cy="163" r="8" fill="#FBBF24" stroke="#B45309" stroke-width="2.5"/>
-                                <!-- Lencana Titisan Air di Dada -->
                                 <path d="M96 122 L124 122 C124 138 118 148 110 153 C102 148 96 138 96 122 Z" fill="#FFFFFF" stroke="#38BDF8" stroke-width="2.5"/>
                                 <path d="M110 127 C110 127 116 136 116 141 C116 145 113 147 110 147 C107 147 104 145 104 141 C104 136 110 127 110 127 Z" fill="#0284C7"/>
-                                <!-- Kepala & Wajah Ceria -->
                                 <circle cx="110" cy="74" r="30" fill="#F5CBA7" stroke="#334155" stroke-width="3"/>
-                                <!-- Rambut Hitam Kemas -->
                                 <path d="M78 72 C75 35 145 35 142 72 C132 52 88 52 78 72 Z" fill="#1E293B" stroke="#334155" stroke-width="3"/>
-                                <!-- Mata Besar Mesra -->
                                 <circle cx="98" cy="76" r="5" fill="#1E293B"/>
                                 <circle cx="122" cy="76" r="5" fill="#1E293B"/>
                                 <circle cx="96.5" cy="74.5" r="1.8" fill="#FFFFFF"/>
                                 <circle cx="120.5" cy="74.5" r="1.8" fill="#FFFFFF"/>
-                                <!-- Senyuman -->
                                 <path d="M101 89 Q110 95 119 89" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
-                                <!-- Perisai Kristal Biru dengan Titisan Air -->
                                 <path d="M145 108 L195 108 C195 150 182 176 168 188 C154 176 142 150 145 108 Z" fill="#38BDF8" stroke="#E0F2FE" stroke-width="5"/>
                                 <path d="M170 124 C170 124 182 144 182 154 C182 161 176 166 170 166 C164 166 158 161 158 154 C158 144 170 124 170 124 Z" fill="#0284C7" stroke="#FFFFFF" stroke-width="2"/>
                             </svg>
@@ -283,7 +263,7 @@
                             Adiwira Ariz
                         </span>
                         <label class="mt-2 cursor-pointer bg-pastel-blue/70 hover:bg-pastel-blue border-2 border-slate-700 px-3 py-1.5 rounded-xl text-sm font-extrabold text-slate-800 flex items-center gap-1.5 shadow-sm">
-                            <i data-lucide="image-plus" class="w-4 h-4 text-blue-700"></i> Pilih Gambar Ariz
+                            <i data-lucide="image-plus" class="w-4 h-4 text-blue-700"></i> Tukar Gambar Ariz
                             <input type="file" accept="image/*" class="hidden" onchange="uploadCharacterImage(event, 'ariz')">
                         </label>
                     </div>
