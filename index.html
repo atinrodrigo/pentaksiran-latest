@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misi Memulihkan Diari Ariz</title>
+    <!-- Tailwind CSS untuk reka bentuk responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Fredoka & Nunito untuk tulisan besar, bulat dan mesra murid Tahun 4 -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- jsPDF untuk menjana fail PDF sijil sebenar secara terus -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: {
+                            cream: '#FFFDF7',
+                            pink: '#FFD6E0',
+                            pinkDark: '#FF85A2',
+                            blue: '#D6EFFF',
+                            blueDark: '#3B82F6',
+                            gold: '#FFE89E',
+                            goldDark: '#F59E0B',
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['Fredoka', 'sans-serif'],
+                        body: ['Nunito', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #FFFDF7;
+            font-family: 'Nunito', sans-serif;
+            color: #1E293B;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+        /* Butang Gaya Permainan (Game Button) */
+        .btn-game {
+            transition: all 0.15s ease;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+        }
+        .btn-game:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+        }
+        .btn-game:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        /* Kad Gaya Komik Pastel */
+        .card-pastel {
+            border: 4px solid #334155;
+            box-shadow: 0 8px 0 #334155;
+        }
+        /* Gaya Cetakan Sijil */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 10mm;
+            }
+            html, body {
+                background: #FFFFFF !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+            header, footer, #screen-opening, #screen-game, #modal-profile, .no-print {
+                display: none !important;
+            }
+            main {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            #screen-completion {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            #print-certificate-area {
+                display: block !important;
+                visibility: visible !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 auto !important;
+                padding: 24px !important;
+                box-shadow: none !important;
+                border: 8px solid #F59E0B !important;
+                background: #FFFDF7 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- =====================================================================
+         BAHAGIAN KONFIGURASI KEPUTUSAN & WATAK (UNTUK GURU)
+         ===================================================================== -->
+    <script>
+        /**
+         * 1. TETAPAN SAMBUNGAN KEPUTUSAN GOOGLE APPS SCRIPT
+         */
+        const RESULTS_ENDPOINT = "https://script.google.com/macros/s/AKfycbzK9w4rgH4UPr-jRg5CgPuiJnzofRCXpc4h4rfnDJutasVo5gLTcilwSai9ZnnWEiUc/exec"; 
+
+        /**
+         * 2. TETAPAN GAMBAR WATAK (PILIHAN)
+         * Anda boleh menukar URL/nama fail gambar di bawah atau memuat naik terus melalui butang pada skrin.
+         */
+        const DEFAULT_IMAGES = {
+            cikguFatin: "Screenshot 2026-10-28 at 8.07.54 AM.jpg", // Gambar Cikgu Fatin yang dimuat naik
+            ariz: "Screenshot 2026-10-28 at 8.00.35 AM.jpg"        // Gambar Ariz / Haris yang dimuat naik
+        };
+
+        /**
+         * 3. PAUTAN GOOGLE FORMS MENGIKUT MISI
+         */
+        const MISSION_LINKS = {
+            1: "https://forms.gle/MBhoKdn1NzJAhjku9",
+            2: "https://forms.gle/z4YqnJ7v8tSrUjcN9",
+            3: "https://forms.gle/5yE2kw4KoRJYEvY99"
+        };
+    </script>
+
+    <!-- =====================================================================
+         BAR ATAS (HEADER)
+         ===================================================================== -->
+    <header class="bg-pastel-pink border-b-4 border-slate-700 py-4 px-4 sm:px-8 no-print">
+        <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-pastel-gold border-3 border-slate-700 p-2.5 rounded-2xl shadow-sm">
+                    <i data-lucide="shield-heart" class="w-8 h-8 text-amber-600"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-wide">
+                        Misi Memulihkan Diari Ariz
+                    </h1>
+                    <p class="text-base sm:text-lg font-bold text-pink-700">
+                        Bahasa Melayu Tahun 4 • Adiwira Kesihatan
+                    </p>
+                </div>
+            </div>
+
+            <!-- Paparan Maklumat Murid (Muncul selepas mula) -->
+            <div id="student-badge" class="hidden items-center gap-3 bg-white border-3 border-slate-700 px-4 py-2 rounded-2xl shadow-sm">
+                <div class="text-left">
+                    <p class="text-xs font-bold uppercase text-slate-400">Adiwira Bertugas:</p>
+                    <p class="text-lg font-extrabold text-slate-800"><span id="header-student-name">-</span> (<span id="header-student-code" class="text-blue-600">-</span>)</p>
+                </div>
+                <button onclick="openEditProfileModal()" title="Tukar Nama / Kod" class="p-2 bg-pastel-blue hover:bg-blue-200 text-blue-800 rounded-xl border-2 border-slate-700">
+                    <i data-lucide="user-pen" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- =====================================================================
+         KANDUNGAN UTAMA
+         ===================================================================== -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-8">
+
+        <!-- -----------------------------------------------------------------
+             SKRIN 1: SKRIN PEMBUKAAN & PENDAFTARAN ADIWIRA
+             ----------------------------------------------------------------- -->
+        <section id="screen-opening" class="space-y-8">
+            
+            <!-- Kotak Dialog Cikgu Fatin & Ariz -->
+            <div class="bg-white card-pastel rounded-3xl p-6 sm:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    
+                    <!-- Ruang Gambar Watak Cikgu Fatin -->
+                    <div class="md:col-span-4 flex flex-col items-center text-center">
+                        <div class="relative w-48 h-56 sm:w-52 sm:h-60 rounded-3xl bg-white border-4 border-slate-700 overflow-hidden flex items-center justify-center shadow-md p-1">
+                            <img id="img-cikgu" src="" alt="Cikgu Fatin" class="hidden w-full h-full object-contain">
+                            <!-- Ilustrasi SVG Cikgu Fatin (Berhijab merah jambu, berkaca mata, berjubah & memegang perisai titisan air) -->
+                            <svg id="svg-cikgu" viewBox="0 0 220 250" class="w-full h-full">
+                                <rect width="220" height="250" fill="#FFFDF7"/>
+                                <!-- Mantel Adiwira Maroon/Merah Jambu Gelap dengan Jalur Emas -->
+                                <path d="M70 110 C40 140 20 190 15 225 C40 235 80 240 165 230 L145 110 Z" fill="#881337" stroke="#F59E0B" stroke-width="4"/>
+                                <!-- Seluar Panjang Sopan -->
+                                <rect x="82" y="195" width="24" height="55" rx="8" fill="#881337" stroke="#334155" stroke-width="3"/>
+                                <rect x="114" y="195" width="24" height="55" rx="8" fill="#881337" stroke="#334155" stroke-width="3"/>
+                                <!-- Baju Labuh Lengan Panjang Merah Jambu -->
+                                <path d="M72 115 L55 170 L72 175 L82 140 L70 215 L150 215 L138 140 L165 155 L175 135 L145 115 Z" fill="#F472B6" stroke="#F59E0B" stroke-width="3.5"/>
+                                <!-- Tudung Labuh Merah Jambu -->
+                                <path d="M70 75 C70 20 150 20 150 75 C155 125 145 160 115 165 C80 160 65 125 70 75 Z" fill="#EC4899" stroke="#334155" stroke-width="3.5"/>
+                                <!-- Wajah -->
+                                <circle cx="110" cy="78" r="28" fill="#FDE2D2" stroke="#334155" stroke-width="3"/>
+                                <!-- Anak Tudung -->
+                                <path d="M84 68 C95 55 125 55 136 68 C128 50 92 50 84 68 Z" fill="#BE185D"/>
+                                <!-- Kaca Mata Bulat Emas -->
+                                <circle cx="98" cy="78" r="9" fill="#FFFFFF" fill-opacity="0.4" stroke="#D97706" stroke-width="3"/>
+                                <circle cx="122" cy="78" r="9" fill="#FFFFFF" fill-opacity="0.4" stroke="#D97706" stroke-width="3"/>
+                                <line x1="107" y1="78" x2="113" y2="78" stroke="#D97706" stroke-width="3"/>
+                                <!-- Mata -->
+                                <circle cx="98" cy="78" r="3.5" fill="#334155"/>
+                                <circle cx="122" cy="78" r="3.5" fill="#334155"/>
+                                <!-- Senyuman -->
+                                <path d="M103 91 Q110 97 117 91" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+                                <!-- Perisai Merah Jambu & Emas dengan Titisan Air -->
+                                <path d="M68 135 L112 130 C112 165 102 188 88 198 C72 188 64 165 68 135 Z" fill="#F9A8D4" stroke="#D97706" stroke-width="5"/>
+                                <path d="M90 146 C90 146 100 162 100 170 C100 176 95 180 90 180 C85 180 80 176 80 170 C80 162 90 146 90 146 Z" fill="#FFFFFF"/>
+                            </svg>
+                        </div>
+                        <span class="mt-3 inline-block bg-pastel-pink border-2 border-slate-700 px-4 py-1 rounded-full text-lg font-bold text-slate-800">
+                            Cikgu Fatin
+                        </span>
+                        <label class="mt-2 cursor-pointer bg-pastel-pink/60 hover:bg-pastel-pink border-2 border-slate-700 px-3 py-1.5 rounded-xl text-sm font-extrabold text-slate-800 flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="image-plus" class="w-4 h-4 text-pink-700"></i> Pilih Gambar Cikgu Fatin
+                            <input type="file" accept="image/*" class="hidden" onchange="uploadCharacterImage(event, 'cikgu')">
+                        </label>
+                    </div>
+
+                    <!-- Ucapan Cikgu Fatin -->
+                    <div class="md:col-span-4 flex flex-col justify-center space-y-4">
+                        <div class="bg-pastel-cream border-4 border-slate-700 rounded-3xl p-6 shadow-sm relative">
+                            <span class="inline-block bg-pastel-gold border-2 border-slate-700 px-3 py-1 rounded-xl text-sm font-extrabold uppercase tracking-wider mb-3">
+                                Panggilan Kecemasan!
+                            </span>
+                            <p class="text-2xl sm:text-3xl font-heading font-bold text-slate-800 leading-snug">
+                                “Adiwira, Ariz memerlukan bantuan kamu! Selesaikan tiga misi untuk memulihkan diarinya.”
+                            </p>
+                        </div>
+                        <div class="bg-pastel-blue/70 border-2 border-slate-700 rounded-2xl p-4 text-lg font-bold text-slate-700">
+                            📖 Tiga halaman diari Ariz telah hilang. Mari bantu Ariz mencari semula halaman tersebut!
+                        </div>
+                    </div>
+
+                    <!-- Ruang Gambar Watak Ariz -->
+                    <div class="md:col-span-4 flex flex-col items-center text-center">
+                        <div class="relative w-48 h-56 sm:w-52 sm:h-60 rounded-3xl bg-white border-4 border-slate-700 overflow-hidden flex items-center justify-center shadow-md p-1">
+                            <img id="img-ariz" src="" alt="Ariz" class="hidden w-full h-full object-contain">
+                            <!-- Ilustrasi SVG Ariz (Adiwira biru dan emas, berlengan panjang, berseluar panjang & memegang perisai biru) -->
+                            <svg id="svg-ariz" viewBox="0 0 220 250" class="w-full h-full">
+                                <rect width="220" height="250" fill="#FFFDF7"/>
+                                <!-- Mantel Adiwira Emas -->
+                                <path d="M68 112 L35 215 L175 215 L145 112 Z" fill="#F59E0B" stroke="#B45309" stroke-width="3.5"/>
+                                <!-- Seluar Panjang Biru Gelap -->
+                                <path d="M82 180 L72 245 L98 245 L106 195 L114 195 L122 245 L148 245 L138 180 Z" fill="#1E3A8A" stroke="#334155" stroke-width="3.5"/>
+                                <!-- Baju Adiwira Lengan Panjang Biru -->
+                                <path d="M68 115 C68 102 152 102 152 115 L168 160 L148 168 L138 138 L142 190 L78 190 L82 138 L72 168 L52 160 Z" fill="#0284C7" stroke="#F59E0B" stroke-width="3.5"/>
+                                <!-- Tali Pinggang Emas -->
+                                <rect x="78" y="158" width="64" height="10" fill="#F59E0B" stroke="#B45309" stroke-width="2"/>
+                                <circle cx="110" cy="163" r="8" fill="#FBBF24" stroke="#B45309" stroke-width="2.5"/>
+                                <!-- Lencana Titisan Air di Dada -->
+                                <path d="M96 122 L124 122 C124 138 118 148 110 153 C102 148 96 138 96 122 Z" fill="#FFFFFF" stroke="#38BDF8" stroke-width="2.5"/>
+                                <path d="M110 127 C110 127 116 136 116 141 C116 145 113 147 110 147 C107 147 104 145 104 141 C104 136 110 127 110 127 Z" fill="#0284C7"/>
+                                <!-- Kepala & Wajah Ceria -->
+                                <circle cx="110" cy="74" r="30" fill="#F5CBA7" stroke="#334155" stroke-width="3"/>
+                                <!-- Rambut Hitam Kemas -->
+                                <path d="M78 72 C75 35 145 35 142 72 C132 52 88 52 78 72 Z" fill="#1E293B" stroke="#334155" stroke-width="3"/>
+                                <!-- Mata Besar Mesra -->
+                                <circle cx="98" cy="76" r="5" fill="#1E293B"/>
+                                <circle cx="122" cy="76" r="5" fill="#1E293B"/>
+                                <circle cx="96.5" cy="74.5" r="1.8" fill="#FFFFFF"/>
+                                <circle cx="120.5" cy="74.5" r="1.8" fill="#FFFFFF"/>
+                                <!-- Senyuman -->
+                                <path d="M101 89 Q110 95 119 89" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+                                <!-- Perisai Kristal Biru dengan Titisan Air -->
+                                <path d="M145 108 L195 108 C195 150 182 176 168 188 C154 176 142 150 145 108 Z" fill="#38BDF8" stroke="#E0F2FE" stroke-width="5"/>
+                                <path d="M170 124 C170 124 182 144 182 154 C182 161 176 166 170 166 C164 166 158 161 158 154 C158 144 170 124 170 124 Z" fill="#0284C7" stroke="#FFFFFF" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <span class="mt-3 inline-block bg-pastel-blue border-2 border-slate-700 px-4 py-1 rounded-full text-lg font-bold text-slate-800">
+                            Adiwira Ariz
+                        </span>
+                        <label class="mt-2 cursor-pointer bg-pastel-blue/70 hover:bg-pastel-blue border-2 border-slate-700 px-3 py-1.5 rounded-xl text-sm font-extrabold text-slate-800 flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="image-plus" class="w-4 h-4 text-blue-700"></i> Pilih Gambar Ariz
+                            <input type="file" accept="image/*" class="hidden" onchange="uploadCharacterImage(event, 'ariz')">
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Borang Maklumat Murid -->
+            <div class="bg-pastel-gold/60 card-pastel rounded-3xl p-6 sm:p-8 max-w-2xl mx-auto">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 text-center mb-6 flex items-center justify-center gap-2">
+                    <i data-lucide="id-card" class="w-8 h-8 text-amber-600"></i>
+                    Daftar Kad Adiwira Kamu
+                </h2>
+
+                <div class="space-y-5">
+                    <div>
+                        <label for="input-name" class="block text-xl font-bold text-slate-800 mb-2">
+                            1. Nama Penuh Murid:
+                        </label>
+                        <input id="input-name" type="text" placeholder="Contoh: Ahmad Danial bin Kamal" 
+                            class="w-full text-xl font-bold px-5 py-4 rounded-2xl border-4 border-slate-700 bg-white focus:outline-none focus:ring-4 focus:ring-pink-300">
+                    </div>
+
+                    <div>
+                        <label for="input-code" class="block text-xl font-bold text-slate-800 mb-2">
+                            2. Kod Murid:
+                        </label>
+                        <input id="input-code" type="text" placeholder="Contoh: BM4-01" 
+                            class="w-full text-xl font-bold px-5 py-4 rounded-2xl border-4 border-slate-700 bg-white uppercase focus:outline-none focus:ring-4 focus:ring-blue-300">
+                    </div>
+
+                    <!-- Peringatan Penting Nama & Kod Murid -->
+                    <div class="bg-pastel-pink border-3 border-slate-700 rounded-2xl p-4 flex items-start gap-3">
+                        <i data-lucide="alert-circle" class="w-8 h-8 text-pink-700 shrink-0 mt-0.5"></i>
+                        <p class="text-lg sm:text-xl font-bold text-slate-800 leading-snug">
+                            <span class="underline">PERINGATAN PENTING:</span> Sila gunakan <span class="text-pink-700">Nama Penuh dan Kod Murid yang SAMA</span> dalam permainan ini dan ketiga-tiga Google Forms.
+                        </p>
+                    </div>
+
+                    <!-- Mesej Ralat Input -->
+                    <div id="login-error" class="hidden bg-red-100 border-3 border-red-600 text-red-800 px-4 py-3 rounded-2xl text-lg font-bold text-center">
+                        Sila isi Nama Murid dan Kod Murid terlebih dahulu!
+                    </div>
+
+                    <button onclick="startMission()" class="w-full btn-game bg-pastel-blueDark hover:bg-blue-600 text-white font-heading text-2xl py-4 px-6 rounded-2xl border-4 border-slate-800 flex items-center justify-center gap-3">
+                        <span>Mula Misi Sekarang!</span>
+                        <i data-lucide="arrow-right-circle" class="w-7 h-7"></i>
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- -----------------------------------------------------------------
+             SKRIN 2: PETA MISI & LENCANA GANJARAN
+             ----------------------------------------------------------------- -->
+        <section id="screen-game" class="hidden space-y-10 no-print">
+
+            <!-- BarWatak Ringkas & Peringatan Kod Murid -->
+            <div class="bg-white card-pastel rounded-3xl p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-2xl bg-pastel-pink border-3 border-slate-700 overflow-hidden shrink-0 flex items-center justify-center">
+                        <img id="mini-img-cikgu" src="" class="hidden w-full h-full object-cover">
+                        <span id="mini-icon-cikgu" class="text-3xl">👩‍🏫</span>
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-slate-800">
+                            “Gunakan Kod Murid <span id="remind-code" class="bg-pastel-gold px-3 py-0.5 rounded-lg border-2 border-slate-700 text-slate-900"></span> semasa mengisi borang!”
+                        </p>
+                        <p class="text-base font-bold text-slate-600 mt-1">
+                            Selesaikan misi mengikut urutan dari Misi 1 hingga Misi 3.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Status Kemajuan Lencana -->
+                <div class="flex items-center gap-2 bg-pastel-cream border-3 border-slate-700 px-4 py-2.5 rounded-2xl shrink-0">
+                    <span class="text-lg font-extrabold text-slate-700">Halaman Pulih:</span>
+                    <span id="progress-counter" class="text-2xl font-heading font-bold text-blue-600">0 / 3</span>
+                </div>
+            </div>
+
+            <!-- PETA 3 LOKASI MISI -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="map" class="w-8 h-8 text-blue-600"></i>
+                        Peta Misi Adiwira
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    <!-- ================= MISI 1 ================= -->
+                    <div id="card-mission-1" class="card-pastel rounded-3xl bg-white p-6 flex flex-col justify-between relative">
+                        <div>
+                            <!-- Label Status & Lokasi -->
+                            <div class="flex items-center justify-between gap-2 mb-4">
+                                <span class="bg-pastel-blue border-2 border-slate-700 px-3 py-1 rounded-xl text-base font-extrabold text-slate-800">
+                                    📍 Lokasi 1: Perpustakaan
+                                </span>
+                                <span id="status-badge-1" class="bg-pastel-gold border-2 border-slate-700 px-3 py-1 rounded-xl text-sm font-extrabold text-slate-900">
+                                    DIBUKA
+                                </span>
+                            </div>
+
+                            <!-- Ikon & Tajuk Misi -->
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-14 h-14 rounded-2xl bg-pastel-pink border-3 border-slate-700 flex items-center justify-center text-3xl shrink-0">
+                                    🔍
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-bold text-slate-800">MISI 1: JEJAK VIRUS</h3>
+                                </div>
+                            </div>
+
+                            <!-- Cerita Misi -->
+                            <p class="text-xl font-bold text-slate-700 bg-pastel-cream border-2 border-slate-700 p-4 rounded-2xl mb-4">
+                                Cari halaman tentang punca dan penularan influenza.
+                            </p>
+
+                            <!-- Ganjaran -->
+                            <div class="mb-5 text-base font-bold text-slate-600 flex items-center gap-2">
+                                <i data-lucide="award" class="w-5 h-5 text-amber-500 shrink-0"></i>
+                                <span>Ganjaran: Lencana Detektif Virus & Halaman 1</span>
+                            </div>
+                        </div>
+
+                        <!-- Ruang Tindakan Misi 1 -->
+                        <div class="space-y-3">
+                            <button id="btn-open-1" onclick="openForm(1)" class="w-full btn-game bg-pastel-pinkDark hover:bg-pink-500 text-white font-heading text-xl py-3.5 px-4 rounded-2xl border-3 border-slate-800 flex items-center justify-center gap-2">
+                                <i data-lucide="external-link" class="w-6 h-6"></i>
+                                <span>Jawab Misi 1</span>
+                            </button>
+
+                            <!-- Arahan Selepas Buka Borang -->
+                            <div id="instruction-box-1" class="hidden bg-pastel-gold/80 border-3 border-slate-700 rounded-2xl p-4 text-base sm:text-lg font-extrabold text-slate-800 leading-snug">
+                                “Selepas menghantar jawapan, kembali ke permainan dan tekan Semak Keputusan.”
+                            </div>
+
+                            <button id="btn-check-1" onclick="checkServerResults()" class="w-full btn-game bg-pastel-blueDark hover:bg-blue-600 text-white font-heading text-xl py-3.5 px-4 rounded-2xl border-3 border-slate-800 flex items-center justify-center gap-2">
+                                <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                                <span>Semak Keputusan</span>
+                            </button>
+
+                            <!-- Paparan Mesej Semakan -->
+                            <div id="feedback-box-1" class="hidden p-4 rounded-2xl border-3 text-lg font-bold text-center"></div>
+                        </div>
+                    </div>
+
+                    <!-- ================= MISI 2 ================= -->
+                    <div id="card-mission-2" class="card-pastel rounded-3xl bg-slate-100 p-6 flex flex-col justify-between relative">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-4">
+                                <span class="bg-pastel-blue border-2 border-slate-700 px-3 py-1 rounded-xl text-base font-extrabold text-slate-800">
+                                    📍 Lokasi 2: Sudut Kebersihan
+                                </span>
+                                <span id="status-badge-2" class="bg-slate-300 border-2 border-slate-700 px-3 py-1 rounded-xl text-sm font-extrabold text-slate-700">
+                                    🔒 TERKUNCI
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-14 h-14 rounded-2xl bg-pastel-blue border-3 border-slate-700 flex items-center justify-center text-3xl shrink-0">
+                                    🛡️
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-bold text-slate-800">MISI 2: BINA PERISAI</h3>
+                                </div>
+                            </div>
+
+                            <p class="text-xl font-bold text-slate-700 bg-pastel-cream border-2 border-slate-700 p-4 rounded-2xl mb-4">
+                                Lengkapkan halaman tentang langkah pencegahan.
+                            </p>
+
+                            <div class="mb-5 text-base font-bold text-slate-600 flex items-center gap-2">
+                                <i data-lucide="award" class="w-5 h-5 text-amber-500 shrink-0"></i>
+                                <span>Ganjaran: Lencana Perisai Kesihatan & Halaman 2</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <button id="btn-open-2" onclick="openForm(2)" disabled class="w-full btn-game bg-pastel-pinkDark hover:bg-pink-500 text-white font-heading text-xl py-3.5 px-4 rounded-2xl border-3 border-slate-800 flex items-center justify-center gap-2">
+                                <i data-lucide="external-link" class="w-6 h-6"></i>
+                                <span>Jawab Misi 2</span>
+                            </button>
+
+                            <div id="instruction-box-2" class="hidden bg-pastel-gold/80 border-3 border-slate-700 rounded-2xl p-4 text-base sm:text-lg font-extrabold text-slate-800 leading-snug">
+                                “Selepas menghantar jawapan, kembali ke permainan dan tekan Semak Keputusan.”
+                            </div>
+
+                            <button id="btn-check-2" onclick="checkServerResults()" disabled class="w-full btn-game bg-pastel-blueDark hover:bg-blue-600 text-white font-heading text-xl py-3.5 px-4 rounded-2xl border-3 border-slate-800 flex items-center justify-center gap-2">
+                                <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                                <span>Semak Keputusan</span>
+                            </button>
+
+                            <div id="feedback-box-2" class="hidden p-4 rounded-2xl border-3 text-lg font-bold text-center"></div>
+                        </div>
+                    </div>
+
+                    <!-- ================= MISI 3 ================= -->
+                    <div id="card-mission-3" class="card-pastel rounded-3xl bg-slate-100 p-6 flex flex-col justify-between relative">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-4">
+                                <span class="bg-pastel-blue border-2 border-slate-700 px-3 py-1 rounded-xl text-base font-extrabold text-slate-800">
+                                    📍 Lokasi 3: Bilik Darjah
+                                </span>
+                                <span id="status-badge-3" class="bg-slate-300 border-2 border-slate-700 px-3 py-1 rounded-xl text-sm font-extrabold text-slate-700">
+                                    🔒 TERKUNCI
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-14 h-14 rounded-2xl bg-pastel-gold border-3 border-slate-700 flex items-center justify-center text-3xl shrink-0">
+                                    📔
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-bold text-slate-800">MISI 3: PULIHKAN DIARI</h3>
+                                </div>
+                            </div>
+
+                            <p class="text-xl font-bold text-slate-700 bg-pastel-cream border-2 border-slate-700 p-4 rounded-2xl mb-4">
+                                Temukan halaman tentang kesan influenza.
+                            </p>
+
+                            <div class="mb-5 text-base font-bold text-slate-600 flex items-center gap-2">
+                                <i data-lucide="award" class="w-5 h-5 text-amber-500 shrink-0"></i>
+                                <span>Ganjaran: Lencana Adiwira Bahasa & Halaman 3</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <button id="btn-open-3" onclick="openForm(3)" disabled class="w-full btn-game bg-pastel-pinkDark hover:bg-pink-500 text-white font-heading text-xl py-3.5 px-4 rounded-2xl border-3 border-slate-800 flex items-center justify-center gap-2">
+                                <i data-lucide="external-link" class="w-6 h-6"></i>
+                                <span>Jawab Misi 3</span>
+                            </button>
+
+                            <div id="instruction-box-3" class="hidden bg-pastel-gold/80 border-3 border-slate-700 rounded-2xl p-4 text-base sm:text-lg font-extrabold text-slate-800 leading-snug">
+                                “Selepas menghantar jawapan, kembali ke permainan dan tekan Semak Keputusan.”
+                            </div>
+
+                            <button id="btn-check-3" onclick="checkServerResults()" disabled class="w-full btn-game bg-pastel-blueDark hover:bg-blue-600 text-white font-heading text-xl py-3.5 px-4 rounded-2xl border-3 border-slate-800 flex items-center justify-center gap-2">
+                                <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                                <span>Semak Keputusan</span>
+                            </button>
+
+                            <div id="feedback-box-3" class="hidden p-4 rounded-2xl border-3 text-lg font-bold text-center"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- =================================================================
+                 RUANG KOLEKSI LENCANA & HALAMAN DIARI ARIZ
+                 ================================================================= -->
+            <div class="bg-white card-pastel rounded-3xl p-6 sm:p-8">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <i data-lucide="book-open-check" class="w-8 h-8 text-pink-600"></i>
+                    Koleksi Lencana & Halaman Diari Ariz
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Ganjaran 1 -->
+                    <div id="reward-card-1" class="border-3 border-dashed border-slate-400 rounded-2xl p-5 bg-slate-50 text-center opacity-70">
+                        <div class="w-20 h-20 mx-auto rounded-full bg-pastel-pink border-3 border-slate-700 flex items-center justify-center text-4xl mb-3">
+                            🕵️‍♂️
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-800">Lencana Detektif Virus</h4>
+                        <p id="reward-text-1" class="text-base font-bold text-slate-500 mt-2">
+                            🔒 Selesaikan Misi 1 dengan markah 5/5 untuk membuka Halaman Pertama.
+                        </p>
+                    </div>
+
+                    <!-- Ganjaran 2 -->
+                    <div id="reward-card-2" class="border-3 border-dashed border-slate-400 rounded-2xl p-5 bg-slate-50 text-center opacity-70">
+                        <div class="w-20 h-20 mx-auto rounded-full bg-pastel-blue border-3 border-slate-700 flex items-center justify-center text-4xl mb-3">
+                            🛡️
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-800">Lencana Perisai Kesihatan</h4>
+                        <p id="reward-text-2" class="text-base font-bold text-slate-500 mt-2">
+                            🔒 Selesaikan Misi 2 dengan markah 5/5 untuk membuka Halaman Kedua.
+                        </p>
+                    </div>
+
+                    <!-- Ganjaran 3 -->
+                    <div id="reward-card-3" class="border-3 border-dashed border-slate-400 rounded-2xl p-5 bg-slate-50 text-center opacity-70">
+                        <div class="w-20 h-20 mx-auto rounded-full bg-pastel-gold border-3 border-slate-700 flex items-center justify-center text-4xl mb-3">
+                            🌟
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-800">Lencana Adiwira Bahasa</h4>
+                        <p id="reward-text-3" class="text-base font-bold text-slate-500 mt-2">
+                            🔒 Selesaikan Misi 3 dengan markah 5/5 untuk membuka Halaman Ketiga.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- -----------------------------------------------------------------
+             SKRIN 3: PENAMAT, DIARI LENGKAP & SIJIL ADIWIRA KESIHATAN
+             (Hanya dipaparkan apabila sistem mengesahkan ketiga-tiga misi 5/5)
+             ----------------------------------------------------------------- -->
+        <section id="screen-completion" class="hidden space-y-10">
+
+            <!-- Ucapan Tahniah & Diari Lengkap -->
+            <div class="bg-pastel-gold card-pastel rounded-3xl p-6 sm:p-8 text-center space-y-6 no-print">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white border-4 border-slate-800 text-5xl shadow-md">
+                    🎉
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-heading font-bold text-slate-900">
+                    “Tahniah! Kamu berjaya memulihkan Diari Ariz!”
+                </h2>
+                <p class="text-xl font-bold text-slate-800 max-w-2xl mx-auto">
+                    Semua tiga halaman diari Ariz telah berjaya dikumpulkan semula dengan markah penuh 5/5!
+                </p>
+
+                <!-- Paparan Tiga Halaman Diari Lengkap -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left pt-4">
+                    <div class="bg-white border-4 border-slate-800 rounded-2xl p-5 shadow-md">
+                        <span class="inline-block bg-pastel-pink border-2 border-slate-700 px-3 py-1 rounded-lg text-sm font-extrabold mb-2">
+                            Halaman Pertama
+                        </span>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">Punca & Penularan Influenza</h3>
+                        <p class="text-lg font-semibold text-slate-700 leading-relaxed">
+                            “Hari ini saya belajar bahawa influenza berpunca daripada virus. Virus ini merebak melalui titisan pernafasan apabila pesakit batuk atau bersin.”
+                        </p>
+                    </div>
+
+                    <div class="bg-white border-4 border-slate-800 rounded-2xl p-5 shadow-md">
+                        <span class="inline-block bg-pastel-blue border-2 border-slate-700 px-3 py-1 rounded-lg text-sm font-extrabold mb-2">
+                            Halaman Kedua
+                        </span>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">Langkah Pencegahan</h3>
+                        <p class="text-lg font-semibold text-slate-700 leading-relaxed">
+                            “Kita boleh membina perisai diri! Kerapkan mencuci tangan dengan sabun, pakai pelitup muka, dan tutup mulut ketika bersin atau batuk.”
+                        </p>
+                    </div>
+
+                    <div class="bg-white border-4 border-slate-800 rounded-2xl p-5 shadow-md">
+                        <span class="inline-block bg-pastel-gold border-2 border-slate-700 px-3 py-1 rounded-lg text-sm font-extrabold mb-2">
+                            Halaman Ketiga
+                        </span>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">Kesan Influenza</h3>
+                        <p class="text-lg font-semibold text-slate-700 leading-relaxed">
+                            “Jika dijangkiti influenza, badan akan demam panas, sakit tekak, dan letih. Kita perlu berehat di rumah dan mendapatkan rawatan doktor.”
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIJIL ADIWIRA KESIHATAN -->
+            <div id="print-certificate-area" class="bg-white border-8 border-amber-400 rounded-3xl p-8 sm:p-12 shadow-xl max-w-4xl mx-auto text-center relative">
+                <div class="border-4 border-dashed border-pink-300 rounded-2xl p-6 sm:p-10 space-y-6">
+                    
+                    <div class="flex justify-center items-center gap-4 text-4xl">
+                        <span>🕵️‍♂️</span>
+                        <span>🛡️</span>
+                        <span>🌟</span>
+                    </div>
+
+                    <div>
+                        <p class="text-lg sm:text-xl font-extrabold uppercase tracking-widest text-amber-600">
+                            Anugerah Khas Pembelajaran Bahasa Melayu
+                        </p>
+                        <h2 class="text-3xl sm:text-5xl font-heading font-bold text-slate-800 mt-2">
+                            SIJIL ADIWIRA KESIHATAN
+                        </h2>
+                    </div>
+
+                    <p class="text-xl font-bold text-slate-600">
+                        Dengan sukacitanya sijil ini dianugerahkan kepada:
+                    </p>
+
+                    <div class="py-3 px-6 bg-pastel-cream border-b-4 border-slate-800 inline-block min-w-[280px] sm:min-w-[400px]">
+                        <p id="cert-student-name" class="text-2xl sm:text-4xl font-heading font-bold text-blue-700 break-words">
+                            -
+                        </p>
+                    </div>
+
+                    <p class="text-xl sm:text-2xl font-bold text-slate-700 max-w-2xl mx-auto leading-relaxed">
+                        Telah berjaya menyelesaikan ketiga-tiga misi pembelajaran interaktif
+                        <span class="text-pink-600">“Misi Memulihkan Diari Ariz”</span> dengan cemerlang:
+                    </p>
+
+                    <!-- Senarai 3 Misi Selesai pada Sijil -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-left">
+                        <div class="bg-pastel-pink/50 border-2 border-slate-700 rounded-xl px-4 py-2.5 flex items-center gap-2">
+                            <span class="text-xl">✅</span>
+                            <div>
+                                <p class="text-sm font-extrabold text-slate-800">Misi 1: Jejak Virus</p>
+                                <p class="text-xs font-bold text-pink-800">Markah: 5/5</p>
+                            </div>
+                        </div>
+                        <div class="bg-pastel-blue/50 border-2 border-slate-700 rounded-xl px-4 py-2.5 flex items-center gap-2">
+                            <span class="text-xl">✅</span>
+                            <div>
+                                <p class="text-sm font-extrabold text-slate-800">Misi 2: Bina Perisai</p>
+                                <p class="text-xs font-bold text-blue-800">Markah: 5/5</p>
+                            </div>
+                        </div>
+                        <div class="bg-pastel-gold/60 border-2 border-slate-700 rounded-xl px-4 py-2.5 flex items-center gap-2">
+                            <span class="text-xl">✅</span>
+                            <div>
+                                <p class="text-sm font-extrabold text-slate-800">Misi 3: Pulihkan Diari</p>
+                                <p class="text-xs font-bold text-amber-900">Markah: 5/5</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-6 text-lg font-bold text-slate-700">
+                        <div class="bg-pastel-blue/50 border-2 border-slate-700 px-5 py-2.5 rounded-xl">
+                            Kod Murid: <span id="cert-student-code" class="font-extrabold text-slate-900">-</span>
+                        </div>
+                        <div class="bg-pastel-gold/60 border-2 border-slate-700 px-5 py-2.5 rounded-xl">
+                            Tarikh Selesai: <span id="cert-date" class="font-extrabold text-slate-900">-</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Ruang Maklum Balas Muat Turun / Cetakan Sijil -->
+            <div id="cert-action-feedback" class="hidden max-w-2xl mx-auto p-4 rounded-2xl border-3 text-lg font-extrabold text-center no-print"></div>
+
+            <!-- Butang Muat Turun PDF, Cetak Sijil & Kembali ke Peta -->
+            <div class="flex flex-wrap items-center justify-center gap-4 no-print">
+                <button id="btn-download-pdf" type="button" onclick="downloadCertificatePDF()" class="btn-game bg-pastel-pinkDark hover:bg-pink-600 text-white font-heading text-xl sm:text-2xl py-4 px-7 rounded-2xl border-4 border-slate-800 flex items-center gap-3">
+                    <i data-lucide="file-down" class="w-7 h-7"></i>
+                    <span>Muat Turun Sijil PDF</span>
+                </button>
+                <button id="btn-print-cert" type="button" onclick="printCertificate()" class="btn-game bg-pastel-goldDark hover:bg-amber-600 text-white font-heading text-xl sm:text-2xl py-4 px-7 rounded-2xl border-4 border-slate-800 flex items-center gap-3">
+                    <i data-lucide="printer" class="w-7 h-7"></i>
+                    <span>Cetak Sijil</span>
+                </button>
+                <button type="button" onclick="backToMap()" class="btn-game bg-white hover:bg-slate-100 text-slate-800 font-heading text-xl py-4 px-6 rounded-2xl border-4 border-slate-800 flex items-center gap-2">
+                    <i data-lucide="map" class="w-6 h-6"></i>
+                    <span>Lihat Peta Misi</span>
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- =====================================================================
+         MODAL TUKAR NAMA / KOD MURID
+         ===================================================================== -->
+    <div id="modal-profile" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 z-50 no-print">
+        <div class="bg-white card-pastel rounded-3xl max-w-md w-full p-6 space-y-5">
+            <h3 class="text-2xl font-bold text-slate-800">Kemaskini Maklumat Murid</h3>
+            <div>
+                <label class="block text-lg font-bold text-slate-700 mb-1">Nama Murid:</label>
+                <input id="modal-input-name" type="text" class="w-full text-lg font-bold px-4 py-3 rounded-xl border-3 border-slate-700">
+            </div>
+            <div>
+                <label class="block text-lg font-bold text-slate-700 mb-1">Kod Murid:</label>
+                <input id="modal-input-code" type="text" class="w-full text-lg font-bold px-4 py-3 rounded-xl border-3 border-slate-700 uppercase">
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeEditProfileModal()" class="px-5 py-2.5 rounded-xl border-2 border-slate-700 font-bold text-slate-700">
+                    Batal
+                </button>
+                <button onclick="saveProfileChanges()" class="px-5 py-2.5 rounded-xl border-2 border-slate-800 bg-pastel-blueDark text-white font-bold">
+                    Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         KAKI HALAMAN (FOOTER)
+         ===================================================================== -->
+    <footer class="bg-white border-t-4 border-slate-700 py-4 px-6 text-center text-base font-bold text-slate-600 no-print mt-12">
+        Misi Memulihkan Diari Ariz • Permainan Pembelajaran Interaktif Bahasa Melayu Tahun 4
+    </footer>
+
+    <!-- =====================================================================
+         LOGIK PERMAINAN & SEMAKAN KEPUTUSAN (JAVASCRIPT)
+         ===================================================================== -->
+    <script>
+        // Keadaan Permainan Tempatan (Hanya nama, kod, dan penanda borang dibuka untuk UI)
+        // Kelayakan misi dan sijil TIDAK disimpan dalam localStorage sebagai bukti lulus
+        let appState = {
+            studentName: "",
+            studentCode: "",
+            openedForms: { 1: false, 2: false, 3: false },
+            isChecking: false,
+            // Data langsung daripada pengesahan pelayan (bukan localStorage)
+            serverResults: {
+                ok: false,
+                certificateEligible: false,
+                checkedAt: null,
+                missions: {
+                    1: { unlocked: true, passed: false, bestScore: null, maxScore: 5, status: "not_submitted" },
+                    2: { unlocked: false, passed: false, bestScore: null, maxScore: 5, status: "not_submitted" },
+                    3: { unlocked: false, passed: false, bestScore: null, maxScore: 5, status: "not_submitted" }
+                }
+            }
+        };
+
+        // Mulakan Ikon & Muat Nama/Kod Sahaja
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadSavedProfileState();
+            initCharacterImages();
+        });
+
+        // Muat gambar watak jika ada dalam simpanan tempatan atau konfigurasi
+        function initCharacterImages() {
+            const savedCikgu = localStorage.getItem('ariz_img_cikgu') || DEFAULT_IMAGES.cikguFatin;
+            const savedAriz = localStorage.getItem('ariz_img_ariz') || DEFAULT_IMAGES.ariz;
+
+            if (savedCikgu) applyCharacterImage('cikgu', savedCikgu);
+            if (savedAriz) applyCharacterImage('ariz', savedAriz);
+        }
+
+        function uploadCharacterImage(event, character) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                try {
+                    localStorage.setItem('ariz_img_' + character, dataUrl);
+                } catch (err) {
+                    console.warn("Gambar terlalu besar untuk disimpan dalam storan pelayar, tetapi akan dipaparkan sekarang.");
+                }
+                applyCharacterImage(character, dataUrl);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function applyCharacterImage(character, url) {
+            if (!url) return;
+            if (character === 'cikgu') {
+                const img = document.getElementById('img-cikgu');
+                const svg = document.getElementById('svg-cikgu');
+                const miniImg = document.getElementById('mini-img-cikgu');
+                const miniIcon = document.getElementById('mini-icon-cikgu');
+                img.onload = function() {
+                    img.classList.remove('hidden');
+                    svg.classList.add('hidden');
+                    miniImg.src = url;
+                    miniImg.classList.remove('hidden');
+                    miniIcon.classList.add('hidden');
+                };
+                img.onerror = function() {
+                    img.classList.add('hidden');
+                    svg.classList.remove('hidden');
+                };
+                img.src = url;
+            } else if (character === 'ariz') {
+                const img = document.getElementById('img-ariz');
+                const svg = document.getElementById('svg-ariz');
+                img.onload = function() {
+                    img.classList.remove('hidden');
+                    svg.classList.add('hidden');
+                };
+                img.onerror = function() {
+                    img.classList.add('hidden');
+                    svg.classList.remove('hidden');
+                };
+                img.src = url;
+            }
+        }
+
+        // Simpan hanya profil (nama & kod) dan penanda paparan borang dibuka
+        function saveProfileState() {
+            const dataToSave = {
+                studentName: appState.studentName,
+                studentCode: appState.studentCode,
+                openedForms: appState.openedForms
+            };
+            localStorage.setItem('diari_ariz_profile', JSON.stringify(dataToSave));
+        }
+
+        function loadSavedProfileState() {
+            const raw = localStorage.getItem('diari_ariz_profile');
+            if (!raw) return;
+            try {
+                const parsed = JSON.parse(raw);
+                if (parsed.studentName && parsed.studentCode) {
+                    appState.studentName = parsed.studentName;
+                    appState.studentCode = parsed.studentCode;
+                    appState.openedForms = parsed.openedForms || { 1: false, 2: false, 3: false };
+                    document.getElementById('input-name').value = appState.studentName;
+                    document.getElementById('input-code').value = appState.studentCode;
+                }
+            } catch (e) {
+                console.error("Gagal membaca profil tempatan:", e);
+            }
+        }
+
+        // Mula Misi dari Skrin Pembukaan
+        function startMission() {
+            const nameInput = document.getElementById('input-name').value.trim();
+            const codeInput = document.getElementById('input-code').value.trim().toUpperCase();
+            const errorBox = document.getElementById('login-error');
+
+            if (!nameInput || !codeInput) {
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            errorBox.classList.add('hidden');
+            appState.studentName = nameInput;
+            appState.studentCode = codeInput;
+            saveProfileState();
+
+            updateStudentHeader();
+            document.getElementById('screen-opening').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+
+            // Paparkan arahan jika borang pernah dibuka
+            for (let m = 1; m <= 3; m++) {
+                if (appState.openedForms[m]) {
+                    const inst = document.getElementById(`instruction-box-${m}`);
+                    if (inst) inst.classList.remove('hidden');
+                }
+            }
+
+            // Kemaskini UI permulaan
+            updateMissionUI();
+
+            // Lakukan semakan terus ke pelayan untuk mendapatkan status terkini
+            if (RESULTS_ENDPOINT && RESULTS_ENDPOINT.trim() !== "") {
+                checkServerResults();
+            }
+        }
+
+        function updateStudentHeader() {
+            const badge = document.getElementById('student-badge');
+            badge.classList.remove('hidden');
+            badge.classList.add('flex');
+            document.getElementById('header-student-name').textContent = appState.studentName;
+            document.getElementById('header-student-code').textContent = appState.studentCode;
+            document.getElementById('remind-code').textContent = appState.studentCode;
+        }
+
+        // Fungsi Buka Borang Google Forms dalam Tab Baharu
+        function openForm(missionNumber) {
+            // Semak status unlock daripada data pelayan (Misi 1 sentiasa unlocked secara default)
+            const missionInfo = appState.serverResults.missions[missionNumber];
+            if (missionNumber > 1 && (!missionInfo || !missionInfo.unlocked)) {
+                return;
+            }
+
+            const url = MISSION_LINKS[missionNumber];
+            window.open(url, '_blank', 'noopener,noreferrer');
+
+            // Paparkan arahan kembali
+            appState.openedForms[missionNumber] = true;
+            saveProfileState();
+
+            const instructionBox = document.getElementById(`instruction-box-${missionNumber}`);
+            if (instructionBox) instructionBox.classList.remove('hidden');
+        }
+
+        /**
+         * SEMAKAN KEPUTUSAN KESELURUHAN DARI PELAYAN
+         * Menghantar: nama & kod melalui URL searchParams
+         * Mod: GET biasa (bukan no-cors)
+         */
+        async function checkServerResults() {
+            if (appState.isChecking) return;
+
+            // 1. Semakan endpoint
+            if (!RESULTS_ENDPOINT || RESULTS_ENDPOINT.trim() === "") {
+                for (let m = 1; m <= 3; m++) {
+                    showFeedback(m, "Semakan automatik belum disambungkan.", "warning");
+                }
+                return;
+            }
+
+            // 2. Kunci butang dan paparkan status 'Sedang menyemak...'
+            setCheckingState(true);
+
+            try {
+                // Bina URL menggunakan new URL() dan tetapkan searchParams nama & kod
+                const url = new URL(RESULTS_ENDPOINT);
+                url.searchParams.set("nama", appState.studentName);
+                url.searchParams.set("kod", appState.studentCode);
+
+                const response = await fetch(url.toString(), {
+                    method: "GET",
+                    headers: { "Accept": "application/json" }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Ralat respons HTTP: " + response.status);
+                }
+
+                const data = await response.json();
+                handleServerResponse(data);
+
+            } catch (error) {
+                console.error("Ralat semakan pelayan:", error);
+                // Paparkan mesej gagal pada misi yang aktif atau terbuka
+                for (let m = 1; m <= 3; m++) {
+                    const mission = appState.serverResults.missions[m];
+                    if (mission && mission.unlocked) {
+                        showFeedback(m, "Sambungan gagal. Cuba semula.", "warning");
+                    }
+                }
+            } finally {
+                setCheckingState(false);
+            }
+        }
+
+        // Urus status butang semasa semakan aktif bagi mengelak klik berulang
+        function setCheckingState(checking) {
+            appState.isChecking = checking;
+            for (let m = 1; m <= 3; m++) {
+                const btn = document.getElementById(`btn-check-${m}`);
+                if (!btn) continue;
+                if (checking) {
+                    btn.disabled = true;
+                    btn.dataset.originalHtml = btn.innerHTML;
+                    btn.innerHTML = `
+                        <svg class="animate-spin -ml-1 mr-2 h-6 w-6 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+                        <span>Sedang menyemak…</span>
+                    `;
+                } else {
+                    btn.innerHTML = `
+                        <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                        <span>Semak Keputusan</span>
+                    `;
+                    // Keadaan disabled butang akan dikemaskini oleh updateMissionUI()
+                }
+            }
+            if (!checking) {
+                lucide.createIcons();
+            }
+        }
+
+        /**
+         * Memproses JSON daripada pelayan:
+         * ok, missions, certificateEligible, checkedAt, message (jika ok=false)
+         */
+        function handleServerResponse(data) {
+            if (!data) return;
+
+            // Jika pelayan memulangkan ok=false
+            if (data.ok === false) {
+                const serverMsg = data.message || "Ralat memproses semakan daripada pelayan.";
+                for (let m = 1; m <= 3; m++) {
+                    const mInfo = appState.serverResults.missions[m];
+                    if (mInfo && mInfo.unlocked) {
+                        showFeedback(m, serverMsg, "warning");
+                    }
+                }
+                return;
+            }
+
+            // Simpan status semasa dalam memori sesi aplikasi (bukan localStorage)
+            appState.serverResults.ok = true;
+            appState.serverResults.certificateEligible = Boolean(data.certificateEligible);
+            appState.serverResults.checkedAt = data.checkedAt || new Date().toISOString();
+
+            // Petakan senarai/objek missions dari pelayan
+            if (Array.isArray(data.missions)) {
+                data.missions.forEach((mItem) => {
+                    const id = Number(mItem.id);
+                    if (id >= 1 && id <= 3) {
+                        appState.serverResults.missions[id] = mItem;
+                    }
+                });
+            } else if (typeof data.missions === 'object' && data.missions !== null) {
+                for (let key in data.missions) {
+                    const id = Number(key);
+                    if (id >= 1 && id <= 3) {
+                        appState.serverResults.missions[id] = data.missions[key];
+                    }
+                }
+            }
+
+            // Kemaskini UI berdasarkan nilai sebenar daripada pelayan
+            updateMissionUI();
+
+            // Kemaskini paparan mesej maklum balas bagi setiap misi
+            for (let m = 1; m <= 3; m++) {
+                const mission = appState.serverResults.missions[m];
+                if (!mission) continue;
+
+                const isUnlocked = (m === 1) ? true : Boolean(mission.unlocked);
+                if (!isUnlocked) {
+                    const box = document.getElementById(`feedback-box-${m}`);
+                    if (box) box.classList.add('hidden');
+                    continue;
+                }
+
+                // Format markah terbaik: jika null bermaksud "Belum tersedia" bukan 0
+                const bestScoreDisplay = (mission.bestScore === null || mission.bestScore === undefined) 
+                    ? "Belum tersedia" 
+                    : `${mission.bestScore}/${mission.maxScore || 5}`;
+
+                // Pengendalian status
+                if (mission.status === "not_submitted") {
+                    showFeedback(m, "Belum ada jawapan yang sepadan. Semak nama dan kod murid.", "info");
+                } else if (mission.status === "pending") {
+                    showFeedback(m, "Markah belum tersedia. Tunggu sebentar dan semak semula.", "info");
+                } else if (mission.passed || mission.bestScore >= (mission.maxScore || 5)) {
+                    showFeedback(m, `Syabas! Markah terbaik: ${bestScoreDisplay}. Misi ${m} berjaya diselesaikan!`, "success");
+                } else {
+                    // Markah kurang daripada penuh
+                    showFeedback(m, `Markah terbaik: ${bestScoreDisplay}. Teruskan usaha! Semak semula nota dan cuba lagi.`, "retry");
+                }
+            }
+
+            // Hanya jika certificateEligible disahkan true oleh pelayan, paparkan sijil
+            if (appState.serverResults.certificateEligible === true) {
+                showCompletionScreen(appState.serverResults.checkedAt);
+            } else {
+                document.getElementById('screen-completion').classList.add('hidden');
+            }
+        }
+
+        // Kemaskini status kunci kad misi dan ganjaran berdasarkan nilai pelayan
+        function updateMissionUI() {
+            let completedCount = 0;
+
+            for (let m = 1; m <= 3; m++) {
+                const mission = appState.serverResults.missions[m] || {
+                    unlocked: (m === 1),
+                    passed: false,
+                    bestScore: null,
+                    maxScore: 5
+                };
+
+                // Misi 1 sentiasa dibuka sejak awal, misi seterusnya mengikut nilai unlocked pelayan
+                const isUnlocked = (m === 1) ? true : Boolean(mission.unlocked);
+                // Misi hanya dikira lulus/dibuka aksesnya jika ia sudah unlocked oleh pelayan
+                const isPassed = isUnlocked && Boolean(mission.passed || (mission.bestScore !== null && mission.bestScore >= (mission.maxScore || 5)));
+
+                const card = document.getElementById(`card-mission-${m}`);
+                const badge = document.getElementById(`status-badge-${m}`);
+                const btnOpen = document.getElementById(`btn-open-${m}`);
+                const btnCheck = document.getElementById(`btn-check-${m}`);
+                const rewardCard = document.getElementById(`reward-card-${m}`);
+                const rewardText = document.getElementById(`reward-text-${m}`);
+
+                if (!isUnlocked) {
+                    card.classList.remove('bg-white');
+                    card.classList.add('bg-slate-100');
+                    badge.textContent = "🔒 TERKUNCI";
+                    badge.className = "bg-slate-300 border-2 border-slate-700 px-3 py-1 rounded-xl text-sm font-extrabold text-slate-700";
+                    btnOpen.disabled = true;
+                    btnCheck.disabled = true;
+
+                    rewardCard.className = "border-3 border-dashed border-slate-400 rounded-2xl p-5 bg-slate-50 text-center opacity-70";
+                    const lockedDescriptions = {
+                        1: "🔒 Selesaikan Misi 1 dengan markah 5/5 untuk membuka Halaman Pertama.",
+                        2: "🔒 Selesaikan Misi 2 dengan markah 5/5 untuk membuka Halaman Kedua.",
+                        3: "🔒 Selesaikan Misi 3 dengan markah 5/5 untuk membuka Halaman Ketiga."
+                    };
+                    rewardText.textContent = lockedDescriptions[m];
+                    rewardText.className = "text-base font-bold text-slate-500 mt-2";
+
+                } else if (isPassed) {
+                    completedCount++;
+                    card.classList.remove('bg-slate-100');
+                    card.classList.add('bg-white');
+                    badge.textContent = `✅ SELESAI (${mission.bestScore}/${mission.maxScore || 5})`;
+                    badge.className = "bg-emerald-200 border-2 border-slate-700 px-3 py-1 rounded-xl text-sm font-extrabold text-emerald-950";
+                    btnOpen.disabled = false;
+                    btnCheck.disabled = false;
+
+                    // Buka ganjaran diari
+                    rewardCard.className = "border-4 border-slate-700 rounded-2xl p-5 bg-pastel-gold/40 text-center shadow-sm";
+                    const pageDescriptions = {
+                        1: "✅ Halaman 1 Pulih: Punca dan penularan virus influenza.",
+                        2: "✅ Halaman 2 Pulih: Langkah pencegahan dan kebersihan diri.",
+                        3: "✅ Halaman 3 Pulih: Kesan jangkitan influenza kepada kesihatan."
+                    };
+                    rewardText.textContent = pageDescriptions[m];
+                    rewardText.className = "text-base font-extrabold text-emerald-800 mt-2";
+
+                } else {
+                    card.classList.remove('bg-slate-100');
+                    card.classList.add('bg-white');
+                    badge.textContent = "DIBUKA";
+                    badge.className = "bg-pastel-gold border-2 border-slate-700 px-3 py-1 rounded-xl text-sm font-extrabold text-slate-900";
+                    btnOpen.disabled = false;
+                    btnCheck.disabled = false;
+
+                    rewardCard.className = "border-3 border-dashed border-slate-400 rounded-2xl p-5 bg-slate-50 text-center opacity-70";
+                }
+            }
+
+            document.getElementById('progress-counter').textContent = `${completedCount} / 3`;
+        }
+
+        function showFeedback(missionNumber, message, type) {
+            const box = document.getElementById(`feedback-box-${missionNumber}`);
+            if (!box) return;
+            box.classList.remove('hidden');
+            box.textContent = message;
+
+            if (type === "success") {
+                box.className = "p-4 rounded-2xl border-3 border-emerald-700 bg-emerald-100 text-emerald-950 text-lg font-extrabold text-center";
+            } else if (type === "retry") {
+                box.className = "p-4 rounded-2xl border-3 border-amber-700 bg-pastel-gold text-slate-900 text-lg font-extrabold text-center";
+            } else if (type === "warning") {
+                box.className = "p-4 rounded-2xl border-3 border-pink-700 bg-pastel-pink text-slate-900 text-lg font-extrabold text-center";
+            } else {
+                box.className = "p-4 rounded-2xl border-3 border-blue-700 bg-pastel-blue text-slate-900 text-lg font-extrabold text-center";
+            }
+        }
+
+        function showCompletionScreen(dateString) {
+            document.getElementById('cert-student-name').textContent = appState.studentName;
+            document.getElementById('cert-student-code').textContent = appState.studentCode;
+
+            let certDateObj = dateString ? new Date(dateString) : new Date();
+            if (isNaN(certDateObj.getTime())) certDateObj = new Date();
+
+            const formattedDate = certDateObj.toLocaleDateString('ms-MY', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            document.getElementById('cert-date').textContent = formattedDate;
+
+            document.getElementById('screen-completion').classList.remove('hidden');
+            document.getElementById('screen-completion').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Semak sama ada murid benar-benar layak mendapat sijil berdasarkan keputusan pelayan
+        function isCertificateVerified() {
+            if (!appState.serverResults || appState.serverResults.certificateEligible !== true) {
+                return false;
+            }
+            for (let m = 1; m <= 3; m++) {
+                const mission = appState.serverResults.missions[m];
+                if (!mission) return false;
+                const maxScore = mission.maxScore || 5;
+                if (!mission.passed && (mission.bestScore === null || mission.bestScore < maxScore)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Papar mesej status pada bahagian bawah sijil
+        function showCertFeedback(message, type, fallbackBlobUrl = null) {
+            const box = document.getElementById('cert-action-feedback');
+            if (!box) return;
+            box.classList.remove('hidden');
+
+            if (type === "loading") {
+                box.className = "max-w-2xl mx-auto p-4 rounded-2xl border-3 border-blue-700 bg-pastel-blue text-slate-900 text-lg font-extrabold text-center no-print";
+                box.textContent = message;
+            } else if (type === "success") {
+                box.className = "max-w-2xl mx-auto p-4 rounded-2xl border-3 border-emerald-700 bg-emerald-100 text-emerald-950 text-lg font-extrabold text-center no-print";
+                box.innerHTML = "";
+                const textSpan = document.createElement('span');
+                textSpan.textContent = message;
+                box.appendChild(textSpan);
+
+                if (fallbackBlobUrl) {
+                    const subDiv = document.createElement('div');
+                    subDiv.className = "mt-2 text-base";
+                    const openLink = document.createElement('a');
+                    openLink.href = fallbackBlobUrl;
+                    openLink.target = "_blank";
+                    openLink.rel = "noopener noreferrer";
+                    openLink.className = "underline text-blue-800 hover:text-blue-950 font-extrabold";
+                    openLink.textContent = "Klik di sini jika anda mahu membuka PDF dalam tab baharu.";
+                    subDiv.appendChild(openLink);
+                    box.appendChild(subDiv);
+                }
+            } else {
+                box.className = "max-w-2xl mx-auto p-4 rounded-2xl border-3 border-pink-700 bg-pastel-pink text-slate-900 text-lg font-extrabold text-center no-print";
+                box.innerHTML = "";
+                const textP = document.createElement('p');
+                textP.textContent = message;
+                box.appendChild(textP);
+
+                if (fallbackBlobUrl) {
+                    const btnOpenTab = document.createElement('a');
+                    btnOpenTab.href = fallbackBlobUrl;
+                    btnOpenTab.target = "_blank";
+                    btnOpenTab.rel = "noopener noreferrer";
+                    btnOpenTab.className = "mt-3 inline-flex items-center gap-2 bg-pastel-blueDark hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl border-2 border-slate-800 text-base font-bold shadow-sm";
+                    btnOpenTab.textContent = "Buka Sijil PDF dalam Tab Baharu";
+                    box.appendChild(btnOpenTab);
+                }
+            }
+        }
+
+        /**
+         * 1. FUNGSI MUAT TURUN SIJIL PDF SEBENAR (jsPDF)
+         * Dijana terus daripada teks dan lukisan vektor tanpa bergantung pada tangkap layar atau imej luaran.
+         */
+        async function downloadCertificatePDF() {
+            if (!isCertificateVerified()) {
+                showCertFeedback("Sijil hanya boleh dimuat turun selepas ketiga-tiga misi disahkan mendapat markah 5/5.", "error");
+                return;
+            }
+
+            const btn = document.getElementById('btn-download-pdf');
+            const originalHtml = btn ? btn.innerHTML : "";
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-2 h-6 w-6 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                    <span>Sedang menyediakan PDF…</span>
+                `;
+            }
+            showCertFeedback("Sedang menyediakan PDF…", "loading");
+
+            // Beri ruang kepada UI untuk mengemaskini teks butang sebelum menjana PDF
+            await new Promise(resolve => setTimeout(resolve, 120));
+
+            let pdfBlobUrl = null;
+
+            try {
+                if (!window.jspdf || !window.jspdf.jsPDF) {
+                    throw new Error("Pustaka jsPDF tidak dapat dimuatkan. Sila semak sambungan internet anda.");
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: "landscape",
+                    unit: "mm",
+                    format: "a4"
+                });
+
+                const pageWidth = doc.internal.pageSize.getWidth();   // 297 mm
+                const pageHeight = doc.internal.pageSize.getHeight(); // 210 mm
+
+                // Latar Belakang Krim Pastel (#FFFDF7)
+                doc.setFillColor(255, 253, 247);
+                doc.rect(0, 0, pageWidth, pageHeight, "F");
+
+                // Bingkai Luar Emas (#F59E0B)
+                doc.setDrawColor(245, 158, 11);
+                doc.setLineWidth(4);
+                doc.roundedRect(10, 10, pageWidth - 20, pageHeight - 20, 6, 6, "S");
+
+                // Bingkai Dalam Merah Jambu Pastel (#F472B6)
+                doc.setDrawColor(244, 114, 182);
+                doc.setLineWidth(1.2);
+                doc.setLineDashPattern([3, 3], 0);
+                doc.roundedRect(16, 16, pageWidth - 32, pageHeight - 32, 4, 4, "S");
+                doc.setLineDashPattern([], 0);
+
+                // Lencana Bulat Hiasan di Bahagian Atas
+                doc.setFillColor(255, 214, 224); // Pastel Pink
+                doc.setDrawColor(51, 65, 85);
+                doc.setLineWidth(0.8);
+                doc.circle(pageWidth / 2 - 22, 31, 7, "FD");
+
+                doc.setFillColor(214, 239, 255); // Pastel Blue
+                doc.circle(pageWidth / 2, 31, 7, "FD");
+
+                doc.setFillColor(255, 232, 158); // Pastel Gold
+                doc.circle(pageWidth / 2 + 22, 31, 7, "FD");
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9);
+                doc.setTextColor(30, 41, 59);
+                doc.text("M1", pageWidth / 2 - 22, 32.5, { align: "center" });
+                doc.text("M2", pageWidth / 2, 32.5, { align: "center" });
+                doc.text("M3", pageWidth / 2 + 22, 32.5, { align: "center" });
+
+                // Sub-tajuk Atas
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(12);
+                doc.setTextColor(217, 119, 6); // Amber-600
+                doc.text("ANUGERAH KHAS PEMBELAJARAN BAHASA MELAYU TAHUN 4", pageWidth / 2, 47, { align: "center" });
+
+                // Tajuk Utama Sijil
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(30);
+                doc.setTextColor(30, 41, 59); // Slate-800
+                doc.text("SIJIL ADIWIRA KESIHATAN", pageWidth / 2, 61, { align: "center" });
+
+                // Teks Pengenalan Nama
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(14);
+                doc.setTextColor(71, 85, 105);
+                doc.text("Dengan sukacitanya sijil ini dianugerahkan kepada:", pageWidth / 2, 74, { align: "center" });
+
+                // Kotak Nama Murid
+                const studentName = (appState.studentName || document.getElementById('cert-student-name').textContent || "-").trim();
+                const studentCode = (appState.studentCode || document.getElementById('cert-student-code').textContent || "-").trim();
+                const certDate = (document.getElementById('cert-date').textContent || "-").trim();
+
+                doc.setFillColor(255, 248, 225);
+                doc.setDrawColor(30, 41, 59);
+                doc.setLineWidth(0.8);
+                doc.roundedRect(38, 80, pageWidth - 76, 22, 3, 3, "FD");
+
+                // Saiz fon nama dilaraskan mengikut panjang nama murid
+                let nameFontSize = 22;
+                if (studentName.length > 35) nameFontSize = 16;
+                else if (studentName.length > 25) nameFontSize = 19;
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(nameFontSize);
+                doc.setTextColor(29, 78, 216); // Blue-700
+                doc.text(studentName.toUpperCase(), pageWidth / 2, 94, { align: "center", maxWidth: pageWidth - 84 });
+
+                // Pernyataan Penyelesaian
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(14);
+                doc.setTextColor(51, 65, 85);
+                doc.text("Telah berjaya menyelesaikan ketiga-tiga misi pembelajaran interaktif", pageWidth / 2, 114, { align: "center" });
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(15);
+                doc.setTextColor(219, 39, 119); // Pink-600
+                doc.text('"Misi Memulihkan Diari Ariz" dengan cemerlang:', pageWidth / 2, 122, { align: "center" });
+
+                // Kad 3 Misi Selesai (5/5)
+                const boxWidth = 72;
+                const boxHeight = 22;
+                const gap = 8;
+                const startX = (pageWidth - (boxWidth * 3 + gap * 2)) / 2;
+                const boxY = 130;
+
+                const missionDetails = [
+                    { title: "Misi 1: Jejak Virus", sub: "Lulus Cemerlang (5/5)", bg: [255, 214, 224] },
+                    { title: "Misi 2: Bina Perisai", sub: "Lulus Cemerlang (5/5)", bg: [214, 239, 255] },
+                    { title: "Misi 3: Pulihkan Diari", sub: "Lulus Cemerlang (5/5)", bg: [255, 232, 158] }
+                ];
+
+                missionDetails.forEach((item, idx) => {
+                    const x = startX + idx * (boxWidth + gap);
+                    doc.setFillColor(item.bg[0], item.bg[1], item.bg[2]);
+                    doc.setDrawColor(51, 65, 85);
+                    doc.setLineWidth(0.7);
+                    doc.roundedRect(x, boxY, boxWidth, boxHeight, 3, 3, "FD");
+
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(11);
+                    doc.setTextColor(30, 41, 59);
+                    doc.text(item.title, x + boxWidth / 2, boxY + 9, { align: "center" });
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(10);
+                    doc.setTextColor(15, 23, 42);
+                    doc.text(item.sub, x + boxWidth / 2, boxY + 16.5, { align: "center" });
+                });
+
+                // Maklumat Kod Murid & Tarikh Sijil di Bahagian Bawah
+                const infoY = 164;
+                doc.setFillColor(214, 239, 255);
+                doc.setDrawColor(51, 65, 85);
+                doc.roundedRect(pageWidth / 2 - 95, infoY, 88, 14, 3, 3, "FD");
+
+                doc.setFillColor(255, 232, 158);
+                doc.roundedRect(pageWidth / 2 + 7, infoY, 88, 14, 3, 3, "FD");
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(30, 41, 59);
+                doc.text(`Kod Murid: ${studentCode}`, pageWidth / 2 - 51, infoY + 9, { align: "center" });
+                doc.text(`Tarikh Selesai: ${certDate}`, pageWidth / 2 + 51, infoY + 9, { align: "center" });
+
+                // Nota Kaki Sijil
+                doc.setFont("helvetica", "italic");
+                doc.setFontSize(9.5);
+                doc.setTextColor(100, 116, 139);
+                doc.text("Permainan Pembelajaran Interaktif Bahasa Melayu Tahun 4 • Adiwira Kesihatan", pageWidth / 2, 188, { align: "center" });
+
+                // Bina Blob PDF untuk muat turun & pautan sandaran
+                const pdfBlob = doc.output("blob");
+                if (!pdfBlob || pdfBlob.size === 0) {
+                    throw new Error("Fail PDF yang dijana kosong.");
+                }
+
+                pdfBlobUrl = URL.createObjectURL(pdfBlob);
+                const cleanCode = studentCode.replace(/[^a-zA-Z0-9_-]/g, "") || "Adiwira";
+                const fileName = `Sijil_Adiwira_Kesihatan_${cleanCode}.pdf`;
+
+                // Cuba muat turun menggunakan elemen sauh (anchor)
+                const downloadLink = document.createElement("a");
+                downloadLink.href = pdfBlobUrl;
+                downloadLink.download = fileName;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+
+                showCertFeedback(`Sijil PDF (${fileName}) telah disediakan untuk dimuat turun.`, "success", pdfBlobUrl);
+
+            } catch (err) {
+                console.error("Ralat menjana PDF:", err);
+                showCertFeedback(
+                    "Muat turun PDF gagal atau disekat oleh pelayar anda. Sila gunakan pilihan tab baharu atau butang Cetak Sijil.",
+                    "error",
+                    pdfBlobUrl
+                );
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                    lucide.createIcons();
+                }
+            }
+        }
+
+        /**
+         * 2. FUNGSI CETAK SIJIL (window.print)
+         * Memanggil dialog cetakan pelayar melalui klik pengguna dan memaparkan sijil sahaja.
+         */
+        function printCertificate() {
+            if (!isCertificateVerified()) {
+                showCertFeedback("Sijil hanya boleh dicetak selepas ketiga-tiga misi disahkan mendapat markah 5/5.", "error");
+                return;
+            }
+
+            const certArea = document.getElementById('print-certificate-area');
+            if (certArea) {
+                certArea.scrollIntoView({ behavior: 'instant', block: 'center' });
+            }
+
+            try {
+                window.focus();
+                window.print();
+            } catch (err) {
+                console.error("Ralat memanggil window.print():", err);
+                showCertFeedback("Dialog cetakan disekat pada paparan ini. Sila gunakan butang 'Muat Turun Sijil PDF'.", "error");
+            }
+        }
+
+        function backToMap() {
+            document.getElementById('screen-game').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Modal Kemaskini Profil
+        function openEditProfileModal() {
+            document.getElementById('modal-input-name').value = appState.studentName;
+            document.getElementById('modal-input-code').value = appState.studentCode;
+            const modal = document.getElementById('modal-profile');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeEditProfileModal() {
+            const modal = document.getElementById('modal-profile');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveProfileChanges() {
+            const newName = document.getElementById('modal-input-name').value.trim();
+            const newCode = document.getElementById('modal-input-code').value.trim().toUpperCase();
+            if (!newName || !newCode) return;
+
+            const profileChanged = (newName !== appState.studentName || newCode !== appState.studentCode);
+            appState.studentName = newName;
+            appState.studentCode = newCode;
+
+            saveProfileState();
+            updateStudentHeader();
+            closeEditProfileModal();
+
+            if (profileChanged) {
+                // Set semula keputusan pelayan dalam ingatan
+                appState.serverResults = {
+                    ok: false,
+                    certificateEligible: false,
+                    checkedAt: null,
+                    missions: {
+                        1: { unlocked: true, passed: false, bestScore: null, maxScore: 5, status: "not_submitted" },
+                        2: { unlocked: false, passed: false, bestScore: null, maxScore: 5, status: "not_submitted" },
+                        3: { unlocked: false, passed: false, bestScore: null, maxScore: 5, status: "not_submitted" }
+                    }
+                };
+                document.getElementById('screen-completion').classList.add('hidden');
+                for (let m = 1; m <= 3; m++) {
+                    const fb = document.getElementById(`feedback-box-${m}`);
+                    if (fb) fb.classList.add('hidden');
+                }
+                updateMissionUI();
+                checkServerResults();
+            }
+        }
+    </script>
+</body>
+</html>
